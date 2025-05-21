@@ -1,12 +1,5 @@
-version: "1"
-model:
-  - name: predict
-    command: python3 predict.py
-    inputs:
-      prompt:
-        type: string
-        description: "Текстовый запрос для генерации"
-    outputs:
-      output:
-        type: path
-        description: "Путь к сгенерированному изображению"
+name: nanayka_my_model
+description: Модель генерации изображений от Nanayka
+runtime: docker
+predict:
+  command: ["python", "predict.py"]
