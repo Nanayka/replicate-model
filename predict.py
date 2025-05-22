@@ -1,21 +1,26 @@
-from cog import BasePredictor, Input
-from typing import Any
+import os
 import requests
+from cog import BasePredictor, Input, Path
+import replicate
 from PIL import Image
 from io import BytesIO
 
 class Predictor(BasePredictor):
     def setup(self):
-        # Здесь можно загрузить вес модели, если они есть
+        # Не нужно загружать модель вручную — это делает Replicate
         pass
 
-    def predict(self, input_photo_url: str = Input(description="URL фото"), style: str = Input(description="Стиль")) -> Any:
-        # Скачиваем изображение
+    def predict(
+        self,
+        input_photo_url: str = Input(description="Ссылка на изображение"),
+        style: str = Input(description="Выбранный стиль")
+    ) -> Path:
+        # Загружаем изображение по ссылке
         response = requests.get(input_photo_url)
         image = Image.open(BytesIO(response.content))
 
-        # Здесь будет логика генерации по стилю (пока просто сохраняем)
-        output_path = "/tmp/generated_output.jpg"
-        image.save(output_path)
-
-        return output_path
+        # Обрабатываем изображение как input в модель (пример — для SDXL)
+        output = replicate.run(
+            "stability-ai/sdxl:latest",
+            input={
+                "prompt": f"A {style} style po
