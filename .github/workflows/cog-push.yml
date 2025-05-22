@@ -1,0 +1,25 @@
+name: Cog Push
+
+on:
+  workflow_dispatch:  # Позволяет запускать вручную
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Установка Cog
+        run: |
+          curl -o cog.deb -L https://github.com/replicate/cog/releases/download/v0.8.1/cog_0.8.1_amd64.deb
+          sudo dpkg -i cog.deb
+
+      - name: Вход в Replicate
+        env:
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+        run: |
+          echo "$REPLICATE_API_TOKEN" | cog login --token-stdin
+
+      - name: Push модели
+        run: cog push r8.im/nanayka/nanayka-my-model
