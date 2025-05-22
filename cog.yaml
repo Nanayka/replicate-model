@@ -5,5 +5,9 @@ build:
     - torch
     - torchvision
     - transformers
+    - replicate
+    - cog
+    - pillow
+    - requests
 
 predict: predict.py:Predictor
