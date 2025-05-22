@@ -5,6 +5,5 @@ build:
     - torch
     - torchvision
     - transformers
-    - your_other_dependencies
 
 predict: predict.py:Predictor
