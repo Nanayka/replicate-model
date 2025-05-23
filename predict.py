@@ -1,3 +1,4 @@
+
 from cog import BasePredictor, Input, Path
 from PIL import Image
 import torch
@@ -26,3 +27,17 @@ class Predictor(BasePredictor):
         image.save(output_path)
 
         return Path(output_path)
+
+# ======= Тестирование вручную внутри Docker ========
+if __name__ == "__main__":
+    predictor = Predictor()
+    predictor.setup()
+
+    test_photo_path = "test.jpg"  # Это фото должно быть в папке проекта
+
+    result_path = predictor.predict(
+        input_photo=Path(test_photo_path),
+        style="Barbie style"
+    )
+
+    print(f"Готово! Файл сохранён: {result_path}")
