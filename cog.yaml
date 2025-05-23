@@ -5,9 +5,13 @@ build:
     - torch
     - torchvision
     - transformers
-    - replicate
-    - cog
-    - pillow
-    - requests
 
 predict: predict.py:Predictor
+
+input:
+  input_photo:
+    type: path
+    description: "Ссылка на изображение"
+  style:
+    type: string
+    description: "Стиль для генерации"
