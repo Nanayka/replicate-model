@@ -24,3 +24,4 @@ jobs:
 
       - name: Push model to Replicate
         run: cog push r8.im/nanayka/nanayka-my-model
+ 
