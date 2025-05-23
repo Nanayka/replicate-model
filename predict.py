@@ -1,26 +1,34 @@
-import os
-import requests
 from cog import BasePredictor, Input, Path
-import replicate
 from PIL import Image
-from io import BytesIO
+from typing import Any
+import torch
+from diffusers import StableDiffusionPipeline
 
 class Predictor(BasePredictor):
     def setup(self):
-        # Не нужно загружать модель вручную — это делает Replicate
-        pass
+        # Загружаем модель (можно указать свою модель или взять pretrained)
+        self.pipe = StableDiffusionPipeline.from_pretrained(
+            "stabilityai/stable-diffusion-2-1",
+            torch_dtype=torch.float16
+        ).to("cuda")
 
     def predict(
         self,
-        input_photo_url: str = Input(description="Ссылка на изображение"),
-        style: str = Input(description="Выбранный стиль")
+        input_photo: Path = Input(description="Фото пользователя"),
+        style: str = Input(description="Желаемый стиль", default="in the style of Hollywood glamour")
     ) -> Path:
-        # Загружаем изображение по ссылке
-        response = requests.get(input_photo_url)
-        image = Image.open(BytesIO(response.content))
+        # Загружаем изображение
+        image = Image.open(input_photo).convert("RGB")
 
-        # Обрабатываем изображение как input в модель (пример — для SDXL)
-        output = replicate.run(
-            "stability-ai/sdxl:latest",
-            input={
-                "prompt": f"A {style} style po
+        # Преобразуем изображение в описание (в реальных проектах здесь должна быть модель для извлечения черт)
+        # В этом примере мы просто вставляем "A photo of a woman" + стиль
+        prompt = f"A photo of a woman {style}"
+
+        # Генерация изображения
+        output = self.pipe(prompt=prompt).images[0]
+
+        # Сохраняем результат
+        output_path = "/tmp/output.png"
+        output.save(output_path)
+
+        return Path(output_path)
