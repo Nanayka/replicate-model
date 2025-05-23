@@ -1,43 +1,25 @@
-
 from cog import BasePredictor, Input, Path
 from PIL import Image
 import torch
-from torchvision import transforms
+from diffusers import StableDiffusionPipeline
 import uuid
 
 class Predictor(BasePredictor):
     def setup(self):
-        # Здесь можно загрузить нужную модель, например, Stable Diffusion
-        # self.pipe = ... (загрузка модели)
-        pass
+        self.pipe = StableDiffusionPipeline.from_pretrained(
+            "runwayml/stable-diffusion-v1-5",
+            torch_dtype=torch.float16,
+            revision="fp16",
+        ).to("cuda" if torch.cuda.is_available() else "cpu")
 
     def predict(
         self,
         input_photo: Path = Input(description="Фотография пользователя"),
         style: str = Input(description="Стиль генерации", default="in the style of Hollywood glamour"),
     ) -> Path:
-        # Преобразуем изображение (например, с помощью torchvision, если нужно)
-        image = Image.open(input_photo).convert("RGB")
+        prompt = f"portrait photo of the same person {style}"
+        image = self.pipe(prompt=prompt).images[0]
 
-        # Здесь должна быть логика генерации нового изображения по фото и стилю
-        # Например: result_image = self.pipe(image, prompt=style) ...
-
-        # Пока что просто сохраняем входное изображение как результат (заглушка)
         output_path = f"/tmp/output-{uuid.uuid4().hex[:8]}.png"
         image.save(output_path)
-
         return Path(output_path)
-
-# ======= Тестирование вручную внутри Docker ========
-if __name__ == "__main__":
-    predictor = Predictor()
-    predictor.setup()
-
-    test_photo_path = "test.jpg"  # Это фото должно быть в папке проекта
-
-    result_path = predictor.predict(
-        input_photo=Path(test_photo_path),
-        style="Barbie style"
-    )
-
-    print(f"Готово! Файл сохранён: {result_path}")
