@@ -1,7 +1,4 @@
 torch
-torchvision
 transformers
-replicate
-cog
-pillow
-requests
+diffusers
+Pillow
