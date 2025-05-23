@@ -1,34 +1,28 @@
 from cog import BasePredictor, Input, Path
 from PIL import Image
-from typing import Any
 import torch
-from diffusers import StableDiffusionPipeline
+from torchvision import transforms
+import uuid
 
 class Predictor(BasePredictor):
     def setup(self):
-        # Загружаем модель (можно указать свою модель или взять pretrained)
-        self.pipe = StableDiffusionPipeline.from_pretrained(
-            "stabilityai/stable-diffusion-2-1",
-            torch_dtype=torch.float16
-        ).to("cuda")
+        # Здесь можно загрузить нужную модель, например, Stable Diffusion
+        # self.pipe = ... (загрузка модели)
+        pass
 
     def predict(
         self,
-        input_photo: Path = Input(description="Фото пользователя"),
-        style: str = Input(description="Желаемый стиль", default="in the style of Hollywood glamour")
+        input_photo: Path = Input(description="Фотография пользователя"),
+        style: str = Input(description="Стиль генерации", default="in the style of Hollywood glamour"),
     ) -> Path:
-        # Загружаем изображение
+        # Преобразуем изображение (например, с помощью torchvision, если нужно)
         image = Image.open(input_photo).convert("RGB")
 
-        # Преобразуем изображение в описание (в реальных проектах здесь должна быть модель для извлечения черт)
-        # В этом примере мы просто вставляем "A photo of a woman" + стиль
-        prompt = f"A photo of a woman {style}"
+        # Здесь должна быть логика генерации нового изображения по фото и стилю
+        # Например: result_image = self.pipe(image, prompt=style) ...
 
-        # Генерация изображения
-        output = self.pipe(prompt=prompt).images[0]
-
-        # Сохраняем результат
-        output_path = "/tmp/output.png"
-        output.save(output_path)
+        # Пока что просто сохраняем входное изображение как результат (заглушка)
+        output_path = f"/tmp/output-{uuid.uuid4().hex[:8]}.png"
+        image.save(output_path)
 
         return Path(output_path)
