@@ -5,17 +5,14 @@ build:
     - torch
     - torchvision
     - transformers
-    - diffusers
-    - accelerate
-    - safetensors
+    - pillow
 
 predict: predict.py:Predictor
 
-inputs:
+input:
   input_photo:
     type: path
-    description: "Фото пользователя"
+    description: "Фотография пользователя"
   style:
     type: string
-    description: "Желаемый стиль"
-    default: "in the style of Hollywood glamour"
+    description: "Стиль генерации"
